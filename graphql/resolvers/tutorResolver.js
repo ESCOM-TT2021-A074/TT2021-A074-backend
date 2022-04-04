@@ -1,4 +1,4 @@
-import { Alumno, Grupo, Sesion } from "../vars";
+import { Alumno, Grupo, Sesion, Encuesta } from "../vars";
 
 const Tutor = {
 	alumnos: async (root) => {
@@ -24,6 +24,14 @@ const Tutor = {
 			},
 		});
 		return sesiones;
+	},
+	encuestas: async (root) => {
+		const encuestas = await Encuesta.findAll({
+			where: {
+				idEncuesta: root.idEncuesta,
+			},
+		});
+		return encuestas;
 	},
 };
 

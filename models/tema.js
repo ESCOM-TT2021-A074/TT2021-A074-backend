@@ -7,10 +7,12 @@ module.exports = (sequelize, DataTypes) => {
 				primaryKey: true,
 				allowNull: false,
 				autoIncrement: true,
+				length: 3,
 			},
 			tema: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				length: 35,
 			},
 		},
 		{

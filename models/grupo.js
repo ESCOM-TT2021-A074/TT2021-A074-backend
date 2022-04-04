@@ -7,14 +7,17 @@ module.exports = (sequelize, DataTypes) => {
 				primaryKey: true,
 				allowNull: false,
 				autoIncrement: true,
+				length: 4,
 			},
 			grupo: {
 				type: DataTypes.STRING,
 				allowNull: false,
+				length: 6,
 			},
 			idTutor: {
 				type: DataTypes.INTEGER,
 				allowNull: true,
+				length: 32,
 			},
 		},
 		{

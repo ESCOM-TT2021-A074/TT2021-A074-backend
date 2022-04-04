@@ -7,6 +7,7 @@ module.exports = (sequelize, DataTypes) => {
 				primaryKey: true,
 				allowNull: false,
 				autoIncrement: true,
+				length: 32,
 			},
 			fechaDeSesion: {
 				type: DataTypes.DATE,
@@ -15,14 +16,17 @@ module.exports = (sequelize, DataTypes) => {
 			idTipoSesion: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
+				length: 3,
 			},
 			idTema: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
+				length: 3,
 			},
 			idTutor: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
+				length: 32,
 			},
 		},
 		{

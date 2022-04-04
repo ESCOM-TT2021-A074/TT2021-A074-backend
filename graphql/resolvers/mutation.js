@@ -45,12 +45,13 @@ const Mutation = {
 	 * @param { numBoleta, password, nombre } param1
 	 * @returns nuevo Registro de Alumno
 	 */
-	registerAlumno: async (root, { numBoleta, password, nombre }) => {
+	registerAlumno: async (root, { numBoleta, password, nombre, correo }) => {
 		const [nuevoAlumno, created] = await Alumno.findOrCreate({
 			where: {
 				numBoleta,
 				password,
 				nombre,
+				correo,
 			},
 		});
 		return nuevoAlumno;
@@ -60,12 +61,13 @@ const Mutation = {
 	 * @param { numEmpleado, password, nombre } args
 	 * @returns nuevo Registro de Tutor
 	 */
-	registerTutor: async (root, { numEmpleado, password, nombre }) => {
+	registerTutor: async (root, { numEmpleado, password, nombre, correo }) => {
 		const [nuevoTutor, created] = await Tutor.findOrCreate({
 			where: {
 				numEmpleado,
 				password,
 				nombre,
+				correo,
 			},
 		});
 		return nuevoTutor;

@@ -1,28 +1,18 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define(
-		"Actividad",
+		"TipoPregunta",
 		{
-			idActividad: {
+			idTipoPregunta: {
 				type: DataTypes.INTEGER,
 				primaryKey: true,
 				allowNull: false,
 				autoIncrement: true,
 				length: 32,
 			},
-			nombre: {
+			tipo: {
 				type: DataTypes.STRING,
 				allowNull: false,
 				length: 75,
-			},
-			descripcion: {
-				type: DataTypes.STRING,
-				allowNull: false,
-				length: 150,
-			},
-			idSesion: {
-				type: DataTypes.INTEGER,
-				allowNull: false,
-				length: 32,
 			},
 		},
 		{

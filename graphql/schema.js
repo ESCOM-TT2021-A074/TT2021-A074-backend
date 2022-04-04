@@ -6,6 +6,7 @@ const schema = gql`
 		numBoleta: Int!
 		password: String!
 		nombre: String!
+		correo: String!
 		tutor: Tutor
 	}
 
@@ -14,9 +15,11 @@ const schema = gql`
 		numEmpleado: Int!
 		password: String!
 		nombre: String!
+		correo: String!
 		alumnos: [Alumno!]
 		grupos: [Grupo!]
 		sesiones: [Sesion!]
+		encuestas: [Encuesta!]
 	}
 
 	type Grupo {
@@ -53,6 +56,41 @@ const schema = gql`
 		sesion: Sesion!
 	}
 
+	type Encuesta {
+		idEncuesta: ID!
+		fechaCreacion: String!
+		fechaLimite: String
+		autor: Tutor!
+		preguntas: [Pregunta!]
+	}
+
+	type Pregunta {
+		idPregunta: ID!
+		pregunta: String!
+		obligatorio: Boolean!
+		tipo: TipoPregunta!
+		respuestas: [Respuesta!]!
+		opciones: [Opcion!]
+	}
+
+	type Respuesta {
+		idRespuesta: ID!
+		respuesta: String!
+		pregunta: Pregunta!
+	}
+
+	type Opcion {
+		idOpcion: ID!
+		opcion: String!
+		pregunta: Pregunta!
+	}
+
+	type TipoPregunta {
+		idTipoPregunta: ID!
+		tipo: String!
+		preguntas: [Pregunta!]!
+	}
+
 	type Query {
 		loginAlumno(numBoleta: Int!, password: String!): Alumno
 		loginTutor(numEmpleado: Int!, password: String!): Tutor
@@ -66,12 +104,14 @@ const schema = gql`
 			numEmpleado: Int
 			password: String
 			nombre: String
+			correo: String
 		): Tutor
 		registerAlumno(
 			id: ID
 			numBoleta: Int
 			password: String
 			nombre: String
+			correo: String
 		): Alumno
 		createGrupo(grupo: String!): Grupo
 		createTema(tema: String!): Tema
