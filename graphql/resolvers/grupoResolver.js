@@ -1,13 +1,13 @@
-import { Tutor } from "../vars";
+import { AlumnoEnGrupo } from "../vars";
 
 const Grupo = {
-	tutor: async (root) => {
-		const tutor = await Tutor.findOne({
+	alumnos: async (root) => {
+		const alumnos = await AlumnoEnGrupo.findOne({
 			where: {
-				idTutor: root.idTutor,
+				idGrupo: root.idGrupo,
 			},
 		});
-		return tutor;
+		return alumnos;
 	},
 };
 

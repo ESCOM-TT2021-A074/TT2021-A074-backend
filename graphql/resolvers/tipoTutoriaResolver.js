@@ -1,13 +1,13 @@
 import { TutorTutorado } from "../vars";
 
-const Alumno = {
+const TipoTutoria = {
 	tutorias: async (root) => {
 		const tutorias = await TutorTutorado.findAll({
 			where: {
-				idAlumnoEnGrupo: root.idAlumnoEnGrupo,
+				idTipoTutoria: root.idTipoTutoria,
 			},
 		});
 		return tutorias;
 	},
 };
-export default Alumno;
+export default TipoTutoria;

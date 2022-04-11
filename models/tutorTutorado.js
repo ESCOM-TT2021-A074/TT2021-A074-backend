@@ -1,33 +1,28 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define(
-		"Alumno",
+		"TutorTutorado",
 		{
-			idAlumno: {
+			idTutorTutorado: {
 				type: DataTypes.INTEGER,
 				primaryKey: true,
 				allowNull: false,
 				autoIncrement: true,
 				length: 32,
 			},
-			numBoleta: {
-				type: DataTypes.STRING,
+			idAlumno: {
+				type: DataTypes.INTEGER,
 				allowNull: false,
-				length: 16,
+				length: 32,
 			},
-			nombre: {
-				type: DataTypes.STRING,
+			idTutor: {
+				type: DataTypes.INTEGER,
 				allowNull: false,
-				length: 75,
+				length: 32,
 			},
-			correo: {
-				type: DataTypes.STRING,
+			idTipoTutoria: {
+				type: DataTypes.INTEGER,
 				allowNull: false,
-				length: 75,
-			},
-			password: {
-				type: DataTypes.STRING,
-				allowNull: false,
-				length: 75,
+				length: 32,
 			},
 		},
 		{

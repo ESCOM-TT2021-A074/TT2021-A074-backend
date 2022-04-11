@@ -1,32 +1,24 @@
-import { Actividad, Tema, TipoSesion, Tutor } from "../vars";
+import { Actividad, Tema, TutorTutorado } from "../vars";
 
 const Sesion = {
-	tipoSesion: async (root) => {
-		const tipo = await TipoSesion.findOne({
-			where: {
-				idTipoSesion: root.idTipoSesion,
-			},
-		});
-		return tipo;
-	},
 	tema: async (root) => {
-		const tema = Tema.findOne({
+		const tema = await Tema.findOne({
 			where: {
 				idTema: root.idTema,
 			},
 		});
 		return tema;
 	},
-	tutor: async (root) => {
-		const tutor = Tutor.findOne({
+	tutoria: async (root) => {
+		const tutoria = await TutorTutorado.findOne({
 			where: {
-				idTutor: root.idTutor,
+				idTutorTutorado: root.idTutorTutorado,
 			},
 		});
-		return tutor;
+		return tutoria;
 	},
 	actividades: async (root) => {
-		const actividades = Actividad.findAll({
+		const actividades = await Actividad.findAll({
 			where: {
 				idSesion: root.idSesion,
 			},

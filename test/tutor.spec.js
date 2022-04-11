@@ -5,22 +5,31 @@ import graphQLClient from "./config";
 describe("Como tutor quiero tener alumnos tutorados para ", () => {
 	it("Agregar un nuevo alumno tutorado", async () => {
 		const dataTutor = {
-			idTutor: 18,
+			idTutor: 1,
+			idTipoTutoria: 1,
 		};
 
 		const dataAlumno = {
-			numBoleta: 2017632335,
+			idAlumno: 1,
+			idGrupo: 1,
 		};
 
 		const mutation = gql`
-			mutation asociarAlumno($idTutor: ID!, $numBoleta: Int!) {
-				setAlumno(idTutor: $idTutor, numBoleta: $numBoleta) {
+			mutation asociarAlumno(
+				$idTutor: ID!
+				$idAlumno: ID!
+				$idGrupo: ID!
+				$idTipoTutoria: ID!
+			) {
+				assignAlumno(
+					idTutor: $idTutor
+					idAlumno: $idAlumno
+					idGrupo: $idGrupo
+					idTipoTutoria: $idTipoTutoria
+				) {
 					idAlumno
 					nombre
 					numBoleta
-					tutor {
-						idTutor
-					}
 				}
 			}
 		`;
@@ -31,22 +40,30 @@ describe("Como tutor quiero tener alumnos tutorados para ", () => {
 
 		const alumno = data.setAlumno;
 		expect(parseInt(alumno.idAlumno)).toBeGreaterThan(0);
-		expect(alumno.tutor).not.toBeNull();
-		expect(alumno.tutor).not.toBeUndefined();
 	});
 
 	it("Eliminar un alumno tutorado", async () => {
 		const dataAlumno = {
-			numBoleta: 2017632335,
+			idAlumno: 1,
+		};
+
+		const dataTutor = {
+			idTutor: 1,
+			idTipoTutoria: 1,
 		};
 
 		const mutation = gql`
-			mutation deslindarAlumnoDeTutor($numBoleta: Int!) {
-				deleteAlumno(numBoleta: $numBoleta) {
+			mutation deslindarAlumnoDeTutor(
+				$idAlumno: ID!
+				$idTutor: ID!
+				$idTipoTutoria: ID!
+			) {
+				unassignAlumno(
+					idAlumno: $idAlumno
+					idTutor: $idTutor
+					idTipoTutoria: $idTipoTutoria
+				) {
 					idAlumno
-					tutor {
-						idTutor
-					}
 				}
 			}
 		`;
@@ -71,35 +88,21 @@ describe("Como tutor quiero poder agendar sesiones ", () => {
 			idTema: 1,
 		};
 
-		const dataTipoSesion = {
-			idTipoSesion: 1,
-		};
-
 		const mutation = gql`
 			mutation crearNuevaSesion(
-				$idTutor: ID!
 				$idTema: ID!
-				$idTipoSesion: ID!
+				$idTutorTutorado: ID!
 				$fechaDeSesion: String!
 			) {
 				createSesion(
-					idTutor: $idTutor
+					idTutorTutorado: $idTutorTutorado
 					idTema: $idTema
-					idTipoSesion: $idTipoSesion
 					fechaDeSesion: $fechaDeSesion
 				) {
 					fechaDeSesion
-					tutor {
-						idTutor
-						nombre
-					}
 					tema {
 						idTema
 						tema
-					}
-					tipoSesion {
-						idTipoSesion
-						tipo
 					}
 				}
 			}
@@ -119,7 +122,6 @@ describe("Como tutor quiero poder agendar sesiones ", () => {
 			.request(mutation, {
 				...dataTutor,
 				...dataTema,
-				...dataTipoSesion,
 				fechaDeSesion,
 			})
 			.catch((err) => console.error(err));
@@ -129,19 +131,13 @@ describe("Como tutor quiero poder agendar sesiones ", () => {
 		expect(new Date(parseInt(sesion.fechaDeSesion)).toUTCString()).toBe(
 			fechaDeSesion
 		);
-		expect(parseInt(sesion.tutor.idTutor)).toBe(dataTutor.idTutor);
-		expect(sesion.tutor.nombre).toBe("Laura Mendez");
 		expect(parseInt(sesion.tema.idTema)).toBe(dataTema.idTema);
 		expect(sesion.tema.tema).toBe("Escolar");
-		expect(parseInt(sesion.tipoSesion.idTipoSesion)).toBe(
-			dataTipoSesion.idTipoSesion
-		);
-		expect(sesion.tipoSesion.tipo).toBe("Individual");
 	});
 });
 
 describe("Como tutor quiero tener alumnos tutorados para ", () => {
-	it("Agregar un nuevo alumno tutorado", async () => {
+	it("Crear una actividad", async () => {
 		const dataSesion = {
 			idSesion: 13,
 		};

@@ -8,6 +8,7 @@ describe("Como alumno quiero registrarme e ingresar a la plataforma", () => {
 			numBoleta: 2017632335,
 			password: "StringChain",
 			nombre: "Soren Hernandez",
+			correo: "fdriverap@gmail.com",
 		};
 
 		const mutation = gql`
@@ -15,15 +16,18 @@ describe("Como alumno quiero registrarme e ingresar a la plataforma", () => {
 				$numBoleta: Int!
 				$password: String!
 				$nombre: String!
+				$correo: String
 			) {
 				registerAlumno(
 					numBoleta: $numBoleta
 					password: $password
 					nombre: $nombre
+					correo: $correo
 				) {
 					idAlumno
 					numBoleta
 					nombre
+					correo
 				}
 			}
 		`;
@@ -35,7 +39,8 @@ describe("Como alumno quiero registrarme e ingresar a la plataforma", () => {
 		const alumno = data.registerAlumno;
 		expect(parseInt(alumno.idAlumno)).toBeGreaterThan(0);
 		expect(alumno.nombre).not.toBeUndefined();
-		expect(alumno.numBoleta.toString().length).toBe(10);
+		expect(alumno.numBoleta.length).toBe(10);
+		expect(alumno.correo).not.toBeUndefined();
 	});
 
 	it("Loggearse como alumno", async () => {
@@ -68,25 +73,32 @@ describe("Como alumno quiero registrarme e ingresar a la plataforma", () => {
 describe("Como Tutor quiero registrarme e ingresar a la plataforma", () => {
 	it("Registrar un tutor nuevo", async () => {
 		const dataTutor = {
-			numEmpleado: 2017632335,
+			numEmpleado: "2017632335",
 			password: "StringChain",
 			nombre: "Laura Mendez",
+			tipo: "Profesor",
+			correo: "lmendez@ipn.mx",
 		};
 
 		const mutation = gql`
 			mutation registrarTutor(
-				$numEmpleado: Int!
-				$password: String!
+				$numEmpleado: String!
+				$tipo: String!
 				$nombre: String!
+				$correo: String!
+				$password: String!
 			) {
 				registerTutor(
 					numEmpleado: $numEmpleado
 					password: $password
 					nombre: $nombre
+					correo: $correo
+					tipo: $tipo
 				) {
 					idTutor
-					numEmpleado
 					nombre
+					correo
+					password
 				}
 			}
 		`;
@@ -98,11 +110,10 @@ describe("Como Tutor quiero registrarme e ingresar a la plataforma", () => {
 		const tutor = data.registerTutor;
 		expect(parseInt(tutor.idTutor)).toBeGreaterThan(0);
 		expect(tutor.nombre).not.toBeUndefined();
-		expect(tutor.numEmpleado.toString().length).toBe(10);
 	});
 	it("Loggearse como tutor", async () => {
 		const dataTutor = {
-			numEmpleado: 2017632335,
+			numEmpleado: "2017632335",
 			password: "StringChain",
 		};
 
@@ -110,8 +121,8 @@ describe("Como Tutor quiero registrarme e ingresar a la plataforma", () => {
 			query login($numEmpleado: Int!, $password: String!) {
 				loginTutor(numEmpleado: $numEmpleado, password: $password) {
 					idTutor
-					numEmpleado
 					nombre
+					correo
 				}
 			}
 		`;
@@ -123,6 +134,6 @@ describe("Como Tutor quiero registrarme e ingresar a la plataforma", () => {
 		const tutor = data.loginTutor;
 		expect(tutor).not.toBeNull();
 		expect(tutor.nombre).toBe("Laura Mendez");
-		expect(tutor.numEmpleado.toString().length).toBe(10);
+		expect(tutor.correo).toBe("lmendez@ipn.mx");
 	});
 });

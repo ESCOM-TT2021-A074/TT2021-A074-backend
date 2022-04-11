@@ -2,11 +2,19 @@ import { async } from "regenerator-runtime";
 import {
 	Actividad,
 	Alumno,
+	AlumnoEnGrupo,
+	Encuesta,
 	Grupo,
+	Opcion,
+	Pregunta,
+	Respuesta,
 	Sesion,
 	Tema,
-	TipoSesion,
+	TipoPregunta,
+	TipoTutoria,
+	TipoTutor,
 	Tutor,
+	TutorTutorado,
 } from "../vars";
 
 const Mutation = {
@@ -15,31 +23,44 @@ const Mutation = {
 	 * @param { idTutor, Boleta } args
 	 * @returns alumno con el tutor asociado
 	 */
-	setAlumno: async (root, { idTutor, numBoleta }) => {
-		const alumno = await Alumno.findOne({
+	assignAlumno: async (root, { idTutor, idAlumno, idTipoTutoria }) => {
+		const [nuevoAlumnoTutorado, created] = await TutorTutorado.findOrCreate({
 			where: {
-				numBoleta,
+				idTutor,
+				idAlumno,
+				idTipoTutoria,
 			},
 		});
-		alumno.idTutor = idTutor;
-		await alumno.save();
-		return alumno;
+
+		return nuevoAlumnoTutorado;
 	},
 	/**
 	 * Funcion que desasocia un Tutor individual a un alumno.
 	 * @param { numBoleta } args
 	 * @returns
 	 */
-	deleteAlumno: async (root, { numBoleta }) => {
-		const alumno = await Alumno.findOne({
+	unassignAlumno: async (root, { idTutor, idAlumno, idTipoTutoria }) => {
+		const alumnoTutorado = await TutorTutorado.destroy({
 			where: {
-				numBoleta,
+				idTutor,
+				idAlumno,
+				idTipoTutoria,
 			},
 		});
-		alumno.idTutor = null;
-		await alumno.save();
-		return alumno;
+
+		return alumnoTutorado;
 	},
+
+	setGroupAlumno: async (root, { idAlumno, idGrupo }) => {
+		const [_, created] = await AlumnoEnGrupo.findOrCreate({
+			where: {
+				idAlumno,
+				idGrupo,
+			},
+		});
+		return created;
+	},
+
 	/**
 	 * Funcion que crea un nuevo registro de un Alumno en el Sistema
 	 * @param { numBoleta, password, nombre } param1
@@ -61,13 +82,23 @@ const Mutation = {
 	 * @param { numEmpleado, password, nombre } args
 	 * @returns nuevo Registro de Tutor
 	 */
-	registerTutor: async (root, { numEmpleado, password, nombre, correo }) => {
+	registerTutor: async (
+		root,
+		{ numEmpleado, tipo, password, nombre, correo }
+	) => {
+		const [nuevoTipoTutor, _] = await TipoTutor.findOrCreate({
+			where: {
+				numero: numEmpleado,
+				tipo,
+			},
+		});
+
 		const [nuevoTutor, created] = await Tutor.findOrCreate({
 			where: {
-				numEmpleado,
-				password,
 				nombre,
 				correo,
+				password,
+				idTipoTutor: nuevoTipoTutor.idTipoTutor,
 			},
 		});
 		return nuevoTutor;
@@ -100,31 +131,14 @@ const Mutation = {
 		return nuevoTema;
 	},
 	/**
-	 * Funcion que crea un nuevo registro de un Tipo de Sesion de tutoria
-	 * @param { tipo } args
-	 * @returns nuevo registro de un Tipo de tutoria
-	 */
-	createTipoSesion: async (root, { tipo }) => {
-		const [nuevoTipoSesion, created] = await TipoSesion.findOrCreate({
-			where: {
-				tipo,
-			},
-		});
-		return nuevoTipoSesion;
-	},
-	/**
 	 * Funcion que crea un registro de sesion de tutoria en el Sistema
-	 * @param {idTutor, idTema, idTipoSesion, fechaDeSesion} args
+	 * @param {idTutor, idTema, fechaDeSesion} args
 	 * @returns nuevo registro de una sesion de tutoria
 	 */
-	createSesion: async (
-		root,
-		{ idTutor, idTema, idTipoSesion, fechaDeSesion }
-	) => {
+	createSesion: async (root, { idTutorTutorado, idTema, fechaDeSesion }) => {
 		const nuevaSesion = await Sesion.create({
-			idTutor,
+			idTutorTutorado,
 			idTema,
-			idTipoSesion,
 			fechaDeSesion,
 		});
 
@@ -143,6 +157,49 @@ const Mutation = {
 		});
 
 		return nuevaActividad;
+	},
+
+	createTipoTutoria: async (root, { tipo }) => {
+		const nuevoTipoTutoria = await TipoTutoria.create({
+			tipo,
+		});
+		return nuevoTipoTutoria;
+	},
+	createEncuesta: async (root, { idTutor, fechaCreacion, fechaLimite }) => {
+		const nuevaEncuesta = await Encuesta.create({
+			idTutor,
+			fechaCreacion,
+			fechaLimite,
+		});
+		return nuevaEncuesta;
+	},
+	createPregunta: async (root, { idTipoPregunta, pregunta, obligatorio }) => {
+		const nuevaPregunta = await Pregunta.create({
+			idTipoPregunta,
+			pregunta,
+			obligatorio,
+		});
+		return nuevaPregunta;
+	},
+	createRespuesta: async (root, { idPregunta, respuesta }) => {
+		const nuevaRespuesta = await Respuesta.create({
+			idPregunta,
+			respuesta,
+		});
+		return nuevaRespuesta;
+	},
+	createOpcion: async (root, { idPregunta, opcion }) => {
+		const nuevaOpcion = await Opcion.create({
+			idPregunta,
+			opcion,
+		});
+		return nuevaOpcion;
+	},
+	createTipoPregunta: async (root, { tipo }) => {
+		const nuevoTipoPregunta = await TipoPregunta.create({
+			tipo,
+		});
+		return nuevoTipoPregunta;
 	},
 	/**
 	 * Funcion que actualiza la contraseña de un Tutor
@@ -192,6 +249,17 @@ const Mutation = {
 
 		return sesion;
 	},
+	updateAsistencia: async (root, { idSesion }) => {
+		const sesion = await Sesion.findOne({
+			where: {
+				idSesion,
+			},
+		});
+
+		sesion.asistencia = !sesion.asistencia;
+		await sesion.save();
+		return sesion;
+	},
 
 	/**
 	 * Funcion que actualiza la informacion de una Actividad
@@ -211,6 +279,56 @@ const Mutation = {
 		await actividad.save();
 
 		return actividad;
+	},
+
+	updateTutor: async (root, { tutor }) => {
+		const tutorUpdated = await Tutor.findOne({
+			where: {
+				idTutor: tutor.idTutor,
+			},
+		});
+
+		tutorUpdated = { ...tutor };
+
+		await tutorUpdated.save();
+
+		return tutorUpdated;
+	},
+
+	updateAlumno: async (root, { alumno }) => {
+		const alumnoUpdated = await Alumno.findOne({
+			where: {
+				idAlumno: alumno.idAlumno,
+			},
+		});
+
+		alumnoUpdated = { ...parameters };
+
+		await alumnoUpdated.save();
+
+		return alumnoUpdated;
+	},
+
+	updateFechaLimiteEncuesta: async (root, { idEncuesta, newFechaLimite }) => {
+		const encuesta = await Encuesta.findOne({
+			where: {
+				idEncuesta,
+			},
+		});
+
+		encuesta.fechaLimite = newFechaLimite;
+		await encuesta.save();
+		return encuesta;
+	},
+
+	deleteAlumnoEnGrupo: async (root, { idAlumno }) => {
+		const alumnoEnGrupo = await AlumnoEnGrupo.destroy({
+			where: {
+				idAlumno,
+			},
+			truncate: true,
+		});
+		return alumnoEnGrupo;
 	},
 };
 

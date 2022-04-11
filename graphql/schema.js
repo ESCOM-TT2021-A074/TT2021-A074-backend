@@ -3,49 +3,67 @@ import { gql } from "apollo-server-express";
 const schema = gql`
 	type Alumno {
 		idAlumno: ID!
-		numBoleta: Int!
+		numBoleta: String!
 		password: String!
 		nombre: String!
 		correo: String!
-		tutor: Tutor
+		tutorias: [TutorTutorado!]
+	}
+
+	type AlumnoEnGrupo {
+		idAlumnoEnGrupo: ID!
+		alumno: Alumno!
+		grupo: Grupo!
 	}
 
 	type Tutor {
 		idTutor: ID!
-		numEmpleado: Int!
-		password: String!
 		nombre: String!
+		password: String!
 		correo: String!
-		alumnos: [Alumno!]
-		grupos: [Grupo!]
-		sesiones: [Sesion!]
+		tipo: TipoTutor!
+		tutorados: [TutorTutorado!]
 		encuestas: [Encuesta!]
+	}
+
+	type TipoTutor {
+		idTipoTutor: ID!
+		tipo: String!
+		numero: String!
+	}
+
+	type TutorTutorado {
+		idTutorTutorado: ID!
+		tipo: TipoTutoria!
+		alumnoTutorado: Alumno!
+		tutor: Tutor!
+		sesiones: [Sesion!]
+	}
+
+	type TipoTutoria {
+		idTipoTutoria: ID!
+		tipo: String!
+		tutorias: [TutorTutorado!]
 	}
 
 	type Grupo {
 		idGrupo: ID!
 		grupo: String!
-		tutor: Tutor
+		alumnos: [Alumno!]
 	}
 
 	type Sesion {
 		idSesion: ID!
 		fechaDeSesion: String!
-		tipoSesion: TipoSesion!
+		asistencia: Boolean!
 		tema: Tema!
-		tutor: Tutor!
+		tutoria: TutorTutorado!
 		actividades: [Actividad!]
 	}
 
 	type Tema {
 		idTema: ID!
 		tema: String!
-		sesiones: [Sesion!]
-	}
-
-	type TipoSesion {
-		idTipoSesion: ID!
-		tipo: String!
 		sesiones: [Sesion!]
 	}
 
@@ -69,7 +87,7 @@ const schema = gql`
 		pregunta: String!
 		obligatorio: Boolean!
 		tipo: TipoPregunta!
-		respuestas: [Respuesta!]!
+		respuestas: [Respuesta]!
 		opciones: [Opcion!]
 	}
 
@@ -88,40 +106,67 @@ const schema = gql`
 	type TipoPregunta {
 		idTipoPregunta: ID!
 		tipo: String!
-		preguntas: [Pregunta!]!
+		preguntas: [Pregunta!]
 	}
 
 	type Query {
-		loginAlumno(numBoleta: Int!, password: String!): Alumno
-		loginTutor(numEmpleado: Int!, password: String!): Tutor
+		loginAlumno(numBoleta: String!, password: String!): Alumno
+		loginTutor(numero: String!, password: String!): Tutor
+		getEncuestaById(idEncuesta: ID!): Encuesta
+		getEncuestasByTutor(numero: String!): [Encuesta!]
+		getSesionById(idSesion: ID!): Sesion
 	}
 
 	type Mutation {
-		setAlumno(idTutor: ID!, numBoleta: Int!): Alumno
-		deleteAlumno(numBoleta: Int!): Alumno
+		assignAlumno(
+			idTutor: ID!
+			idAlumno: ID!
+			idGrupo: ID!
+			idTipoTutoria: ID!
+		): TutorTutorado
+		unassignAlumno(
+			idTutor: ID!
+			idAlumno: ID!
+			idTipoTutoria: ID!
+		): TutorTutorado
+		setGroupAlumno(idAlumno: ID!, idGrupo: ID!): Boolean
 		registerTutor(
-			id: ID
-			numEmpleado: Int
-			password: String
-			nombre: String
-			correo: String
+			id: ID!
+			numEmpleado: String!
+			tipo: String!
+			nombre: String!
+			correo: String!
+			password: String!
 		): Tutor
 		registerAlumno(
 			id: ID
-			numBoleta: Int
-			password: String
-			nombre: String
-			correo: String
+			numBoleta: String!
+			nombre: String!
+			correo: String!
+			password: String!
 		): Alumno
 		createGrupo(grupo: String!): Grupo
 		createTema(tema: String!): Tema
-		createTipoSesion(tipo: String!): TipoSesion
 		createSesion(
-			idTutor: ID!
+			idTutorTutorado: ID!
 			idTema: ID!
-			idTipoSesion: ID!
 			fechaDeSesion: String!
 		): Sesion
+		createTipoTutoria(tipo: String!): TipoTutoria
+		createTipoTutor(tipo: String!): TipoTutor
+		createEncuesta(
+			idTutor: ID!
+			fechaCreacion: String!
+			fechaLimite: String
+		): Encuesta
+		createPregunta(
+			idTipoPregunta: ID!
+			pregunta: String!
+			obligatorio: Boolean!
+		): Pregunta
+		createRespuesta(idPregunta: ID!, respuesta: String!): Respuesta
+		createOpcion(idPregunta: ID!, opcion: String!): Opcion
+		createTipoPregunta(tipo: String!): TipoPregunta
 		createActividad(
 			idSesion: ID!
 			nombre: String!
@@ -130,11 +175,29 @@ const schema = gql`
 		updatePasswordTutor(idTutor: ID!, newPassword: String!): Tutor
 		updatePasswordAlumno(idAlumno: ID!, newPassword: String!): Alumno
 		updateFechaSesion(idSesion: ID!, newFechaSesion: String!): Sesion
+		updateAsistencia(idSesion: ID!): Sesion
 		updateActividad(
 			idActividad: ID!
 			nombre: String
 			descripcion: String
 		): Actividad
+		updateTutor(
+			idTutor: ID!
+			nombre: String
+			password: String
+			correo: String
+		): Tutor
+		updateAlumno(
+			idAlumno: ID!
+			nombre: String
+			correo: String
+			password: String
+		): Alumno
+		updateFechaLimiteEncuesta(
+			idEncuesta: ID!
+			newFechaLimite: String!
+		): Encuesta
+		deleteAlumnoEnGrupo(idAlumno: ID!): [AlumnoEnGrupo]
 	}
 `;
 

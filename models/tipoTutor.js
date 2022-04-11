@@ -1,18 +1,23 @@
 module.exports = (sequelize, DataTypes) => {
 	return sequelize.define(
-		"Grupo",
+		"TipoTutor",
 		{
-			idGrupo: {
+			idTipoTutor: {
 				type: DataTypes.INTEGER,
 				primaryKey: true,
 				allowNull: false,
 				autoIncrement: true,
-				length: 4,
+				length: 32,
 			},
-			grupo: {
+			tipo: {
 				type: DataTypes.STRING,
 				allowNull: false,
-				length: 6,
+				length: 10,
+			},
+			numero: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				length: 16,
 			},
 		},
 		{

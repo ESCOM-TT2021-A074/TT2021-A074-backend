@@ -1,34 +1,26 @@
-import { Alumno, Grupo, Sesion, Encuesta } from "../vars";
+import { TipoTutor, TutorTutorado, Encuesta } from "../vars";
 
 const Tutor = {
-	alumnos: async (root) => {
-		const alumnos = await Alumno.findAll({
+	tipo: async (root) => {
+		const tipo = await TipoTutor.findOne({
 			where: {
-				idTutor: root.idTutor,
+				idTipoTutor: root.idTipoTutor,
 			},
 		});
-		return alumnos;
+		return tipo;
 	},
-	grupos: async (root) => {
-		const grupos = await Grupo.findAll({
+	tutorados: async (root) => {
+		const tutorados = await TutorTutorado.findAll({
 			where: {
 				idTutor: root.idTutor,
 			},
 		});
-		return grupos;
-	},
-	sesiones: async (root) => {
-		const sesiones = await Sesion.findAll({
-			where: {
-				idTutor: root.idTutor,
-			},
-		});
-		return sesiones;
+		return tutorados;
 	},
 	encuestas: async (root) => {
 		const encuestas = await Encuesta.findAll({
 			where: {
-				idEncuesta: root.idEncuesta,
+				idTutor: root.idTutor,
 			},
 		});
 		return encuestas;

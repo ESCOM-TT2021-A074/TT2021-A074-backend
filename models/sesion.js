@@ -13,17 +13,17 @@ module.exports = (sequelize, DataTypes) => {
 				type: DataTypes.DATE,
 				allowNull: false,
 			},
-			idTipoSesion: {
-				type: DataTypes.INTEGER,
+			asistencia: {
+				type: DataTypes.BOOLEAN,
 				allowNull: false,
-				length: 3,
+				defaultValue: false,
 			},
 			idTema: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 				length: 3,
 			},
-			idTutor: {
+			idTutorTutorado: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
 				length: 32,

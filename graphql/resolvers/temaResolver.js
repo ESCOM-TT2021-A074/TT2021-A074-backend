@@ -2,7 +2,7 @@ import { Sesion } from "../vars";
 
 const Tema = {
 	sesiones: async (root) => {
-		const sesiones = Sesion.findAll({
+		const sesiones = await Sesion.findAll({
 			where: {
 				idTema: root.idTema,
 			},
