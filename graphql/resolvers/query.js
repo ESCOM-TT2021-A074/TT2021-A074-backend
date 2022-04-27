@@ -1,5 +1,5 @@
 import { async } from "regenerator-runtime";
-import { Alumno, Encuesta, Sesion, Tutor } from "../vars";
+import { Alumno, Encuesta, Sesion, Tutor, TipoTutor } from "../vars";
 
 const Query = {
 	loginAlumno: async (root, { numBoleta, password }) => {

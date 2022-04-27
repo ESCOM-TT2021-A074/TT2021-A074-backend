@@ -131,7 +131,7 @@ const schema = gql`
 		): TutorTutorado
 		setGroupAlumno(idAlumno: ID!, idGrupo: ID!): Boolean
 		registerTutor(
-			id: ID!
+			id: ID
 			numEmpleado: String!
 			tipo: String!
 			nombre: String!
